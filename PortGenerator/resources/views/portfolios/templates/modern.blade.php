@@ -33,6 +33,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styling to make the Dashboard button prominently visible */
+        .dashboard-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #111827 !important;
+            color: #ffffff !important;
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+        .dashboard-nav-btn:hover {
+            background: #374151 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
 
@@ -70,7 +93,8 @@
         </style>
     @endif
 
-   <nav class="site-nav" aria-label="Main navigation">
+    <!-- Top Navigation Bar with Embedded Dashboard Button -->
+    <nav class="site-nav" aria-label="Main navigation">
         <a class="brand" href="#about" aria-label="Back to introduction">
             <span class="brand-mark" aria-hidden="true">PG</span>
             <span>{{ $name }}</span>
@@ -91,22 +115,22 @@
                 <a href="#social">Social</a>
             @endif
         </div>
-    </nav>
 
-    <!-- Dashboard / Back to Templates Button (Positioned Below Nav Bar) -->
-    @auth
-        <div class="container" style="padding-top: 15px; padding-bottom: 0px; display: flex; justify-content: flex-end;">
+        <!-- Prominently Visible Dashboard Action Button -->
+        @auth
             @if(isset($fromTemplate) &&$fromTemplate)
-                <a href="{{ route('portfolios.chooseTemplate') }}" class="button secondary" style="padding: 8px 14px; font-size: 0.85rem;">
-                    &larr; Back to Templates
+                <a href="{{ route('portfolios.chooseTemplate') }}" class="dashboard-nav-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Templates
                 </a>
             @else
-                <a href="{{ route('home') }}" class="button secondary" style="padding: 8px 14px; font-size: 0.85rem;">
-                    &larr; Dashboard
+                <a href="{{ route('home') }}" class="dashboard-nav-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Dashboard
                 </a>
             @endif
-        </div>
-    @endauth
+        @endauth
+    </nav>
 
     <main>
         <!-- INTRODUCTION -->
@@ -245,7 +269,7 @@
         @php
             $skillsArray = [];
             if ($groupedSections->has('skills')) {
-                foreach($groupedSections['skills'] as$item) {
+                foreach($groupedSections['skills'] as $item) {
                     $sList = is_array($item->content['skills'] ?? null) 
                         ? $item->content['skills'] 
                         : array_filter(array_map('trim', explode(',', $item->content['skills'] ?? '')));$skillsArray = array_merge($skillsArray,$sList);
@@ -283,7 +307,7 @@
                 </div>
 
                 <ul class="social-list">
-                    @foreach ($socials as $l)
+                    @foreach ($socials as$l)
                         <li>
                             <a href="{{ $l['url'] }}" target="_blank" rel="noopener noreferrer">
                                 {{ $l['label'] }}
@@ -330,7 +354,6 @@
     </footer>
 
     <script>
-        // Highlight the navigation item that matches the section currently in view.
         const navLinks = [...document.querySelectorAll('.nav-links a')];
         const observedSections = navLinks
             .map((link) => document.querySelector(link.getAttribute('href')))
@@ -354,7 +377,6 @@
             observedSections.forEach((section) => sectionObserver.observe(section));
         }
 
-        // Close Pop-Up Modal
         function closeSuccessModal() {
             const modal = document.getElementById('successModal');
             if (modal) {
@@ -362,7 +384,6 @@
             }
         }
 
-        // Copy link from Pop-Up Modal
         async function copyModalLink(button) {
             const input = document.getElementById('modalShareLink');
             if (!input) return;
@@ -389,7 +410,6 @@
             }, 1800);
         }
 
-        // Copy the public portfolio URL, with a fallback for browsers without Clipboard API access.
         async function copyLink(button) {
             const input = document.getElementById('shareLink');
             if (!input) return;

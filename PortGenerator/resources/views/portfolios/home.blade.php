@@ -106,7 +106,7 @@
 
             @if(isset($portfolios) &&$portfolios->count() > 0)
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-                    @foreach($portfolios as $portfolio)
+                    @foreach($portfolios as$portfolio)
                         <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -318,11 +318,14 @@
         window.addEventListener('click', (event) => {
             const logoutModal = document.getElementById('logoutModal');
             const deleteModal = document.getElementById('deleteModal');
+            const successModal = document.getElementById('successPopupModal');
             if (event.target === logoutModal) closeLogoutModal();
             if (event.target === deleteModal) closeDeleteModal();
+            if (event.target === successModal) closeSuccessPopup();
         });
     </script>
 
+    <!-- Success Notification Modal (Triggers when another portfolio is added / success session exists) -->
     @if(session('success'))
         <div id="successPopupModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center;">
             <div class="card" style="width: 100%; max-width: 400px; padding: 32px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); border: 2px solid #38bdf8; background: var(--card-bg, #12141a); border-radius: 16px; text-align: center;">
@@ -330,12 +333,12 @@
                     <div style="width: 48px; height: 48px; background: rgba(52, 211, 153, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #34d399;">
                         <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    <h3 style="font-family: 'Sansation', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Success!</h3>
+                    <h3 style="font-family: 'Sansation', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Portfolio Added Successfully!</h3>
                     <p class="text-muted" style="font-size: 14px; line-height: 1.5;">{{ session('success') }}</p>
                 </div>
                 
                 <button type="button" onclick="closeSuccessPopup()" class="button primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer;">
-                    Okay
+                    View Dashboard
                 </button>
             </div>
         </div>
