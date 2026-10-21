@@ -104,7 +104,7 @@
         <div style="display: flex; flex-direction: column; gap: 16px;">
             <h2 style="font-size: 22px; font-weight: 700;">Your Portfolios</h2>
 
-            @if(isset($portfolios) &&$portfolios->count() > 0)
+            @if(isset($portfolios) && $portfolios->count() > 0)
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
                     @foreach($portfolios as$portfolio)
                         <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
