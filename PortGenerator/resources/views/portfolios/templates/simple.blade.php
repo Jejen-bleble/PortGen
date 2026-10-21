@@ -60,6 +60,21 @@
 </head>
 <body class="bg-gray-100 text-slate-800 font-sans antialiased min-h-screen py-8">
 
+    <!-- Top Navigation Bar / Action Bar -->
+    @auth
+        <div class="max-w-5xl mx-auto mb-4 px-4 flex justify-between items-center">
+            @if(isset($fromTemplate) && $fromTemplate)
+                <a href="{{ route('portfolios.chooseTemplate') }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white px-3 py-2 rounded-lg shadow-sm border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Templates
+                </a>
+            @else
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white px-3 py-2 rounded-lg shadow-sm border border-slate-200 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+            @endif
+        </div>
+    @endauth
+
     <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
         
         <!-- Header / Banner Section -->
@@ -287,19 +302,71 @@
 
     </div>
 
-    <!-- Floating Dashboard Button -->
+    <!-- Template Successfully Chosen Popup Modal -->
     @auth
-        <div style="position: fixed; bottom: 25px; right: 25px; z-index: 100;">
-            @if(isset($fromTemplate) && $fromTemplate)
-                <a href="{{ route('portfolios.chooseTemplate') }}" class="px-4 py-2.5 bg-slate-900 text-white text-xs font-semibold rounded-full shadow-2xl hover:bg-slate-800 transition-all inline-block">
-                    &larr; Back to Templates
-                </a>
-            @else
-                <a href="{{ route('home') }}" class="px-4 py-2.5 bg-slate-900 text-white text-xs font-semibold rounded-full shadow-2xl hover:bg-slate-800 transition-all inline-block">
-                    &larr; Dashboard
-                </a>
-            @endif
-        </div>
+        @if($hasId)
+            <div id="templateChosenModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-slate-800 relative transform transition-all">
+                    
+                    <!-- Success Check Icon -->
+                    <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-emerald-100 text-emerald-600 mb-4">
+                        <i class="fa-solid fa-check text-2xl"></i>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-center text-slate-900 mb-1">Portfolio Successfully Created!</h3>
+                    <p class="text-xs text-slate-500 text-center mb-5">You have successfully chosen this template. You can now copy and share your live portfolio link with anyone.</p>
+                    
+                    <!-- Input link + copy button -->
+                    <div class="mb-5">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">Your Shareable Link</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="modal-portfolio-url" readonly value="{{ $shareUrl }}" 
+                                   class="bg-slate-100 border border-slate-300 text-slate-800 text-xs px-3 py-2.5 rounded-lg w-full outline-none select-all font-mono">
+                            <button onclick="copyModalPortfolioUrl()" id="modal-copy-btn" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-all shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Close Button -->
+                    <button type="button" onclick="closeTemplateModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-all shadow-md">
+                        View Portfolio
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                window.addEventListener('DOMContentLoaded', () => {
+                    if (!sessionStorage.getItem('template_popup_shown')) {
+                        const modal = document.getElementById('templateChosenModal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                        }
+                        sessionStorage.setItem('template_popup_shown', 'true');
+                    }
+                });
+
+                function closeTemplateModal() {
+                    const modal = document.getElementById('templateChosenModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+
+                function copyModalPortfolioUrl() {
+                    const urlInput = document.getElementById('modal-portfolio-url');
+                    if(!urlInput) return;
+                    urlInput.select();
+                    urlInput.setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(urlInput.value);
+                    const btn = document.getElementById('modal-copy-btn');
+                    btn.innerText = 'Copied!';
+                    setTimeout(() => {
+                        btn.innerText = 'Copy';
+                    }, 2000);
+                }
+            </script>
+        @endif
     @endauth
 
     <script>
