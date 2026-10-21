@@ -16,41 +16,39 @@
         :root[data-theme="light"] {
             --bg-color: #f1f5f9; /* Light page background */
             --grid-line: rgba(0, 0, 0, 0.06);
-            --text-main: #0f172a; /* Page title text color outside cards */
+            --text-main: #0f172a; 
             --text-muted: #64748b;
-            --accent-blue: #38bdf8; 
-            --accent-glow: rgba(56, 189, 248, 0.25);
+            --accent-blue: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.25);
             
-            /* Containers stay dark */
-            --nav-bg: rgba(18, 20, 26, 0.9);
-            --nav-border: #38bdf8;
-            --card-bg: rgba(18, 20, 26, 0.85);
-            --card-border: rgba(56, 189, 248, 0.35);
-            --button-bg: rgba(24, 28, 36, 0.9);
-            --input-bg: #090e17;
+            /* Navigation bar turns light */
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --nav-border: #0284c7;
+            
+            /* New, softer slate-dark shade for cards and containers */
+            --card-bg: rgba(30, 41, 59, 0.92); /* Softer slate dark */
+            --card-border: rgba(56, 189, 248, 0.25);
+            --button-bg: rgba(15, 23, 42, 0.9);
+            --input-bg: #0f172a; /* Richer dark background for inputs */
         }
 
-        /* Ensure text inside cards, navigation, and boxes stays white/light in light mode */
+        /* Ensure text inside the dark content cards stays white/light */
         :root[data-theme="light"] .card-section,
-        :root[data-theme="light"] .card,
-        :root[data-theme="light"] header > nav,
+        :root[data-theme="light"] .card:not(header .card),
         :root[data-theme="light"] .sub-item-box {
             color: #ffffff;
         }
 
         :root[data-theme="light"] .card-section p,
-        :root[data-theme="light"] .card p,
+        :root[data-theme="light"] .card-section label,
         :root[data-theme="light"] .sub-item-box p,
-        :root[data-theme="light"] label {
-            color: #94a3b8;
+        :root[data-theme="light"] .sub-item-box label {
+            color: #cbd5e1; /* Softer light-gray for readability */
         }
 
         :root[data-theme="light"] .card-section h1,
         :root[data-theme="light"] .card-section h2,
-        :root[data-theme="light"] .card-section h3,
-        :root[data-theme="light"] .card h1,
-        :root[data-theme="light"] .card h2,
-        :root[data-theme="light"] .card h3 {
+        :root[data-theme="light"] .card-section h3 {
             color: #ffffff;
         }
 
@@ -58,8 +56,8 @@
         :root[data-theme="light"] input[type="email"],
         :root[data-theme="light"] textarea {
             color: #ffffff;
-            background: #090e17;
-            border-color: rgba(56, 189, 248, 0.35);
+            background: #0f172a;
+            border-color: rgba(56, 189, 248, 0.25);
         }
 
         :root[data-theme="light"] input::placeholder,
