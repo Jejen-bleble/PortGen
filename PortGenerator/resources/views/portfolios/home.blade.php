@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/css/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Sansation:wght@300;400;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <div class="grid-container" aria-hidden="true">
@@ -29,9 +28,6 @@
                     {{ auth()->user()->name }}
                 </span>
 
-                <!-- Theme Toggle Button -->
-               
-
                 <!-- Settings Button -->
                 <a href="{{ route('settings.edit') }}" class="button" style="padding: 6px 14px; font-size: 12px; min-height: 32px; display: inline-flex; align-items: center; gap: 6px;">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -44,7 +40,7 @@
                         Log out
                     </button>
                 </form>
-                 <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+                <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
                     <svg class="sun-icon" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -67,7 +63,7 @@
     <!-- Main Content Area -->
     <main style="display: flex; flex-direction: column; gap: 32px;">
 
-        <!-- Welcome Banner & Primary Action (Untouched layout) -->
+        <!-- Welcome Banner & Primary Action -->
         <div class="card welcome-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;">
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <h1 style="font-size: 28px; font-weight: 700;">
@@ -132,12 +128,13 @@
                                     <a href="{{ url('/p/' . $portfolio->slug) }}" class="button" style="padding: 4px 10px; font-size: 11px; min-height: 28px;">View</a>
                                     <a href="{{ route('portfolios.edit', $portfolio->id) }}" class="button primary" style="padding: 4px 10px; font-size: 11px; min-height: 28px;">Edit</a>
                                     
-                                    <!-- Delete Button Form -->
-                                    <form action="{{ route('portfolios.destroy', $portfolio->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this portfolio?');" style="margin: 0;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="button danger" style="padding: 4px 10px; font-size: 11px; min-height: 28px; cursor: pointer;">Delete</button>
-                                    </form>
+                                    <!-- Delete Button triggers Modal -->
+                                    <button type="button" 
+                                            class="button danger" 
+                                            style="padding: 4px 10px; font-size: 11px; min-height: 28px; cursor: pointer;"
+                                            onclick="openDeleteModal('{{ route('portfolios.destroy', $portfolio->id) }}', '{{ addslashes($portfolio->full_name) }}')">
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -153,14 +150,54 @@
                         <h3 style="font-size: 16px; font-weight: 700;">No portfolios created yet</h3>
                         <p class="text-muted" style="font-size: 13px; margin-top: 4px;">Get started by creating your first portfolio showcase.</p>
                     </div>
-                  
                 </div>
             @endif
         </div>
 
     </main>
 
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 400px; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--card-border, rgba(56, 189, 248, 0.3)); background: var(--card-bg, #12141a);">
+            <div style="display: flex; flex-direction: column; gap: 8px; text-align: center;">
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Are you sure you want to log out?</h3>
+                <p class="text-muted" style="font-size: 14px;">You will need to sign back in to access your portfolios and dashboard.</p>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 4px;">
+                <button type="button" onclick="closeLogoutModal()" class="button" style="flex: 1; padding: 10px; justify-content: center;">No</button>
+                
+                <form id="logoutForm" method="POST" action="{{ route('logout') }}" style="flex: 1; margin: 0;">
+                    @csrf
+                    <button type="submit" class="button danger" style="width: 100%; padding: 10px; justify-content: center;">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal Container -->
+    <div id="deleteModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 400px; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--card-border, rgba(56, 189, 248, 0.3)); background: var(--card-bg, #12141a);">
+            <div style="display: flex; flex-direction: column; gap: 8px; text-align: center;">
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Delete Portfolio?</h3>
+                <p class="text-muted" style="font-size: 14px;">Are you sure you want to delete <span id="deletePortfolioName" style="color: var(--text-main); font-weight: 600;"></span>? This action cannot be undone.</p>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 4px;">
+                <button type="button" onclick="closeDeleteModal()" class="button" style="flex: 1; padding: 10px; justify-content: center;">Cancel</button>
+                
+                <form id="deleteForm" method="POST" action="" style="flex: 1; margin: 0;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="button danger" style="width: 100%; padding: 10px; justify-content: center;">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script>
+        // Theme Toggle Script
         const html = document.documentElement;
         const themeButton = document.getElementById('themeToggleBtn');
 
@@ -185,6 +222,7 @@
             });
         }
 
+        // Wave Canvas Script
         const canvas = document.getElementById('waveCanvas');
         const context = canvas ? canvas.getContext('2d') : null;
 
@@ -247,68 +285,17 @@
 
         resizeCanvas();
         drawWaves();
-    </script>
 
-    <!-- Logout Confirmation Modal Backdrop & Container -->
-    <div id="logoutModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center;">
-        <div class="card" style="width: 100%; max-width: 400px; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--card-border, rgba(56, 189, 248, 0.3)); background: var(--card-bg, #12141a);">
-            <div style="display: flex; flex-direction: column; gap: 8px; text-align: center;">
-                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Are you sure you want to log out?</h3>
-                <p class="text-muted" style="font-size: 14px;">You will need to sign back in to access your portfolios and dashboard.</p>
-            </div>
-            
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 4px;">
-                <button type="button" onclick="closeLogoutModal()" class="button" style="flex: 1; padding: 10px; justify-content: center;">No</button>
-                
-                <!-- Actual Form That Submits Logout -->
-                <form id="logoutForm" method="POST" action="{{ route('logout') }}" style="flex: 1; margin: 0;">
-                    @csrf
-                    <button type="submit" class="button danger" style="width: 100%; padding: 10px; justify-content: center;">Yes</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="deleteModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center;">
-        <div class="card" style="width: 100%; max-width: 400px; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--card-border, rgba(56, 189, 248, 0.3)); background: var(--card-bg, #12141a);">
-            <div style="display: flex; flex-direction: column; gap: 8px; text-align: center;">
-                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main, #ffffff);">Delete Portfolio?</h3>
-                <p class="text-muted" style="font-size: 14px;">Are you sure you want to delete <span id="deletePortfolioName" style="color: var(--text-main); font-weight: 600;"></span>? This action cannot be undone.</p>
-            </div>
-            
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 4px;">
-                <button type="button" onclick="closeDeleteModal()" class="button" style="flex: 1; padding: 10px; justify-content: center;">Cancel</button>
-                
-                <form id="deleteForm" method="POST" action="" style="flex: 1; margin: 0;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="button danger" style="width: 100%; padding: 10px; justify-content: center;">Yes, Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-    <script>
-                function openLogoutModal() {
+        // Modal Functions
+        function openLogoutModal() {
             const modal = document.getElementById('logoutModal');
-            if (modal) {
-                modal.style.display = 'flex';
-            }
+            if (modal) modal.style.display = 'flex';
         }
 
         function closeLogoutModal() {
             const modal = document.getElementById('logoutModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
+            if (modal) modal.style.display = 'none';
         }
-
-        // Optional: Close modal if user clicks outside the modal box
-        window.addEventListener('click', (event) => {
-            const modal = document.getElementById('logoutModal');
-            if (event.target === modal) {
-                closeLogoutModal();
-            }
-        });
 
         function openDeleteModal(deleteUrl, portfolioName) {
             const modal = document.getElementById('deleteModal');
@@ -324,29 +311,21 @@
 
         function closeDeleteModal() {
             const modal = document.getElementById('deleteModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
+            if (modal) modal.style.display = 'none';
         }
 
-    // Close modals when clicking outside the container box
+        // Close modals on background click
         window.addEventListener('click', (event) => {
-        const logoutModal = document.getElementById('logoutModal');
-        const deleteModal = document.getElementById('deleteModal');
-        if (event.target === logoutModal) {
-            closeLogoutModal();
-        }
-        if (event.target === deleteModal) {
-            closeDeleteModal();
-        }
-    });
+            const logoutModal = document.getElementById('logoutModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target === logoutModal) closeLogoutModal();
+            if (event.target === deleteModal) closeDeleteModal();
+        });
     </script>
 
     @if(session('success'))
         <div id="successPopupModal" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center;">
             <div class="card" style="width: 100%; max-width: 400px; padding: 32px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); border: 2px solid #38bdf8; background: var(--card-bg, #12141a); border-radius: 16px; text-align: center;">
-                
-                <!-- Icon & Message -->
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
                     <div style="width: 48px; height: 48px; background: rgba(52, 211, 153, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #34d399;">
                         <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -355,7 +334,6 @@
                     <p class="text-muted" style="font-size: 14px; line-height: 1.5;">{{ session('success') }}</p>
                 </div>
                 
-                <!-- Action Button -->
                 <button type="button" onclick="closeSuccessPopup()" class="button primary" style="width: 100%; padding: 12px; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer;">
                     Okay
                 </button>
@@ -365,9 +343,7 @@
         <script>
             function closeSuccessPopup() {
                 const modal = document.getElementById('successPopupModal');
-                if (modal) {
-                    modal.style.display = 'none';
-                }
+                if (modal) modal.style.display = 'none';
             }
         </script>
     @endif
