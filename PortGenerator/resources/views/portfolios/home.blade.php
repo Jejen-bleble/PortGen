@@ -22,7 +22,6 @@
         <nav>
             <div class="nav-left">
                 <a href="{{ route('home') }}" class="logo">PortGen</a>
-                <span class="badge">Dashboard</span>
             </div>
 
             <div class="nav-right">
@@ -154,9 +153,7 @@
                         <h3 style="font-size: 16px; font-weight: 700;">No portfolios created yet</h3>
                         <p class="text-muted" style="font-size: 13px; margin-top: 4px;">Get started by creating your first portfolio showcase.</p>
                     </div>
-                    <a href="{{ route('portfolios.create') ?? '#' }}" class="button primary" style="margin-top: 8px;">
-                        Create Portfolio
-                    </a>
+                  
                 </div>
             @endif
         </div>

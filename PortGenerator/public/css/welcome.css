@@ -63,7 +63,7 @@
             background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
                               linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
             background-size: 48px 48px;
-            animation: scrollGrid 18s linear infinite;
+            animation: scrollGrid 60s linear infinite;
         }
 
         @keyframes scrollGrid {

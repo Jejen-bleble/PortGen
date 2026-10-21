@@ -22,9 +22,6 @@
             <a href="{{ url('/') }}" class="logo">PortGen</a>
             
             <!-- Left/Center Nav Links (Only Home remains here) -->
-            <ul class="nav-links">
-                <li><a href="#hero">Home</a></li>
-            </ul>
 
             <!-- Right Actions Group: Log in/Dashboard, Theme Toggle, and Get Started -->
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -75,9 +72,8 @@
                         <a class="button primary" href="{{ route('home') }}">Open Your Dashboard <span aria-hidden="true">&nbsp;→</span></a>
                     @else
                         <a class="button primary" href="{{ route('register') }}">Create My Portfolio <span aria-hidden="true">&nbsp;→</span></a>
-                        <a class="button" href="{{ route('login') }}">Log in</a>
                     @endauth
-                    <a class="button" href="#how-it-works">How It Works</a>
+                    
                 </div>
             </div>
 

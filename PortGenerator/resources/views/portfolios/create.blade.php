@@ -24,7 +24,6 @@
         <nav>
             <div class="nav-left">
                 <a href="{{ route('home') }}" class="logo">PortGen</a>
-                <span class="badge">Create Portfolio</span>
             </div>
 
             <div class="nav-right">

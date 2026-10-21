@@ -27,8 +27,9 @@
         <nav>
             <a href="{{ route('home') }}" class="logo">PortGen</a>
             <ul class="nav-links">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('portfolios.create') }}">Create Portfolio</a></li>
+                <a href="{{ isset($portfolio) && $portfolio->id ? route('portfolios.edit', $portfolio->id) : route('portfolios.create') }}" class="back-link">
+                    &larr; Back to Edit Portfolio
+                </a>
             </ul>
             <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
                 <svg class="sun-icon" viewBox="0 0 24 24">
@@ -105,9 +106,7 @@
             </div>
         </form>
         <!-- Back to Edit Link -->
-        <a href="{{ isset($portfolio) && $portfolio->id ? route('portfolios.edit', $portfolio->id) : route('portfolios.create') }}" class="back-link">
-            &larr; Back to Edit Portfolio
-        </a>
+        
     </main>
 
     <script>

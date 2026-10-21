@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/css/templates/creative.css">
     <title>{{ $portfolio->full_name }} | Creative Portfolio</title>
     <link rel="icon" type="image/png" href="{{ asset('images/LOGO.png') }}">
-
 </head>
 <body>
 
@@ -14,7 +13,41 @@
         $groupedSections =$portfolio->sections->groupBy('section_type');
     @endphp
 
-    <!-- Sticky Navigation Bar -->
+    <!-- Success Notification Pop-Up Modal -->
+    @if(session('success') || request()->has('generated'))
+        <div id="successModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: #ffffff; border: 3px solid #242424; border-radius: 16px; padding: 30px; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                
+                <div style="font-size: 42px; margin-bottom: 10px;">🎉</div>
+                
+                <h2 style="font-size: 24px; font-weight: 900; margin: 0 0 10px; color: #242424;">Portfolio Generated!</h2>
+                
+                <p style="font-size: 14px; color: #555; margin: 0 0 20px; line-height: 1.5;">
+                    You have successfully chosen and generated your portfolio template! You can now copy the link below and share it with everyone.
+                </p>
+
+                @if(!empty($portfolio->slug))
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                        <input id="modalShareLink" type="text" value="{{ url('/p/' . $portfolio->slug) }}" readonly style="flex: 1; padding: 10px 12px; border: 2px solid #242424; border-radius: 8px; font-size: 13px; background: #f8f5ef; font-weight: bold; color: #242424;">
+                        <button type="button" class="button" onclick="copyModalLink(this)" style="padding: 10px 16px; background: #d7f36b; color: #242424; border-color: #242424;">Copy Link</button>
+                    </div>
+                @endif
+
+                <button type="button" onclick="closeSuccessModal()" class="button" style="width: 100%; background: #242424; color: white; padding: 12px; margin-top: 5px;">
+                    Got it, view portfolio!
+                </button>
+            </div>
+        </div>
+
+        <style>
+            @keyframes popIn {
+                0% { opacity: 0; transform: scale(0.8); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+        </style>
+    @endif
+
+    <!-- Sticky Navigation Bar (Clean & Only Links) -->
     <nav style="position: sticky; top: 0; z-index: 1000; background: rgba(248, 245, 239, 0.92); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(36, 36, 36, 0.1);">
         <div class="container" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding-top: 15px; padding-bottom: 15px; margin: 0 auto;">
             <a class="brand" href="#home">
@@ -38,6 +71,21 @@
             </div>
         </div>
     </nav>
+
+    <!-- Dashboard / Templates Button (Positioned Directly Below Nav) -->
+    @auth
+        <div class="container" style="padding-top: 15px; padding-bottom: 0px; display: flex; justify-content: flex-end;">
+            @if(isset($fromTemplate) &&$fromTemplate)
+                <a href="{{ route('portfolios.chooseTemplate') }}" class="button" style="padding: 8px 14px; font-size: 12px;">
+                    &larr; Back to Templates
+                </a>
+            @else
+                <a href="{{ route('home') }}" class="button" style="padding: 8px 14px; font-size: 12px;">
+                    &larr; Dashboard
+                </a>
+            @endif
+        </div>
+    @endauth
 
     <div class="container">
 
@@ -198,7 +246,7 @@
                     @php
                         $skillsArray = [];
                         if ($groupedSections->has('skills')) {
-                            foreach($groupedSections['skills'] as $section) {
+                            foreach($groupedSections['skills'] as$section) {
                                 $sList = is_array($section->content['skills'] ?? null) 
                                     ? $section->content['skills'] 
                                     : array_filter(array_map('trim', explode(',', $section->content['skills'] ?? '')));$skillsArray = array_merge($skillsArray,$sList);
@@ -284,21 +332,6 @@
 
     </div>
 
-   <!-- Floating Back / Dashboard Button with Dynamic Preview Support -->
-    @auth
-        <div style="position: fixed; bottom: 25px; right: 25px; z-index: 100;">
-            @if(isset($fromTemplate) &&$fromTemplate)
-                <a href="{{ route('portfolios.chooseTemplate') }}" class="button" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                    &larr; Back to Templates
-                </a>
-            @else
-                <a href="{{ route('home') }}" class="button" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                    &larr; Dashboard
-                </a>
-            @endif
-        </div>
-    @endauth
-
     <script>
         // Highlight the navigation item that matches the section currently in view.
         const navLinks = [...document.querySelectorAll('.nav-links a')];
@@ -322,6 +355,41 @@
             });
 
             observedSections.forEach((section) => sectionObserver.observe(section));
+        }
+
+        // Close Pop-Up Modal
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Copy link from Pop-Up Modal
+        async function copyModalLink(button) {
+            const input = document.getElementById('modalShareLink');
+            if (!input) return;
+
+            const originalText = button.textContent;
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(input.value);
+                } else {
+                    input.focus();
+                    input.select();
+                    document.execCommand('copy');
+                }
+                button.textContent = 'Copied!';
+            } catch (err) {
+                input.focus();
+                input.select();
+                button.textContent = 'Copied!';
+            }
+
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1800);
         }
 
         // Copy the public portfolio URL, with a fallback for browsers without Clipboard API access.

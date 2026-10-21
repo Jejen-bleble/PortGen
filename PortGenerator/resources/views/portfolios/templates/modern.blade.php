@@ -1,11 +1,11 @@
 @php
-    $name = $portfolio->full_name ?: 'Your Name';
-    $headline = $portfolio->headline ?: 'Developer / Professional';
-    $about = $portfolio->bio ?: 'A snapshot of my work, experience, and the things I love creating.';
-    $email = $portfolio->email ?? '';
-    $phone = $portfolio->contact_number ?? '';
-    $location = $portfolio->address ?? '';
-    $photo = $portfolio->profile_image
+    $name =$portfolio->full_name ?: 'Your Name';
+    $headline =$portfolio->headline ?: 'Developer / Professional';
+    $about =$portfolio->bio ?: 'A snapshot of my work, experience, and the things I love creating.';
+    $email =$portfolio->email ?? '';
+    $phone =$portfolio->contact_number ?? '';
+    $location =$portfolio->address ?? '';
+    $photo =$portfolio->profile_image
         ? asset('storage/' . $portfolio->profile_image)
         : null;
 
@@ -13,14 +13,12 @@
 
     // Social links array
     $socials = [];
-    if (!empty($portfolio->github)) $socials[] = ['label' => 'GitHub', 'url' => $portfolio->github];
-    if (!empty($portfolio->linkedin)) $socials[] = ['label' => 'LinkedIn', 'url' => $portfolio->linkedin];
-    if (!empty($portfolio->twitter)) $socials[] = ['label' => 'Twitter / X', 'url' => $portfolio->twitter];
-    if (!empty($portfolio->facebook)) $socials[] = ['label' => 'Facebook', 'url' => $portfolio->facebook];
+    if (!empty($portfolio->github)) $socials[] = ['label' => 'GitHub', 'url' =>$portfolio->github];
+    if (!empty($portfolio->linkedin)) $socials[] = ['label' => 'LinkedIn', 'url' =>$portfolio->linkedin];
+    if (!empty($portfolio->twitter)) $socials[] = ['label' => 'Twitter / X', 'url' =>$portfolio->twitter];
+    if (!empty($portfolio->facebook)) $socials[] = ['label' => 'Facebook', 'url' =>$portfolio->facebook];
 
-    $shareUrl = !empty($portfolio->slug) ? url('/p/' . $portfolio->slug) : '';
-    $hasId = !empty($portfolio->id);
-    $editUrl = $hasId ? route('portfolios.edit', $portfolio->id) : '#';
+    $shareUrl = !empty($portfolio->slug) ? url('/p/' . $portfolio->slug) : '';$hasId = !empty($portfolio->id);$editUrl = $hasId ? route('portfolios.edit', $portfolio->id) : '#';
 @endphp
 
 <!DOCTYPE html>
@@ -37,6 +35,41 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- Success Notification Pop-Up Modal -->
+    @if(session('success') || request()->has('generated'))
+        <div id="successModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: #ffffff; border: 2px solid #242424; border-radius: 16px; padding: 30px; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                
+                <div style="font-size: 42px; margin-bottom: 10px;">🎉</div>
+                
+                <h2 style="font-size: 24px; font-weight: 900; margin: 0 0 10px; color: #111;">Portfolio Generated!</h2>
+                
+                <p style="font-size: 14px; color: #555; margin: 0 0 20px; line-height: 1.5;">
+                    You have successfully chosen and generated your portfolio template! You can now copy the link below and share it with everyone.
+                </p>
+
+                @if(!empty($shareUrl))
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                        <input id="modalShareLink" type="text" value="{{ $shareUrl }}" readonly style="flex: 1; padding: 10px 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; background: #f9fafb; font-weight: bold; color: #333;">
+                        <button type="button" class="button" onclick="copyModalLink(this)" style="padding: 10px 16px; background: var(--accent, #4f46e5); color: white; border: none; border-radius: 8px; cursor: pointer;">Copy Link</button>
+                    </div>
+                @endif
+
+                <button type="button" onclick="closeSuccessModal()" class="button" style="width: 100%; background: #111; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px;">
+                    Got it, view portfolio!
+                </button>
+            </div>
+        </div>
+
+        <style>
+            @keyframes popIn {
+                0% { opacity: 0; transform: scale(0.8); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+        </style>
+    @endif
+
    <nav class="site-nav" aria-label="Main navigation">
         <a class="brand" href="#about" aria-label="Back to introduction">
             <span class="brand-mark" aria-hidden="true">PG</span>
@@ -59,6 +92,21 @@
             @endif
         </div>
     </nav>
+
+    <!-- Dashboard / Back to Templates Button (Positioned Below Nav Bar) -->
+    @auth
+        <div class="container" style="padding-top: 15px; padding-bottom: 0px; display: flex; justify-content: flex-end;">
+            @if(isset($fromTemplate) &&$fromTemplate)
+                <a href="{{ route('portfolios.chooseTemplate') }}" class="button secondary" style="padding: 8px 14px; font-size: 0.85rem;">
+                    &larr; Back to Templates
+                </a>
+            @else
+                <a href="{{ route('home') }}" class="button secondary" style="padding: 8px 14px; font-size: 0.85rem;">
+                    &larr; Dashboard
+                </a>
+            @endif
+        </div>
+    @endauth
 
     <main>
         <!-- INTRODUCTION -->
@@ -197,7 +245,7 @@
         @php
             $skillsArray = [];
             if ($groupedSections->has('skills')) {
-                foreach($groupedSections['skills'] as $item) {
+                foreach($groupedSections['skills'] as$item) {
                     $sList = is_array($item->content['skills'] ?? null) 
                         ? $item->content['skills'] 
                         : array_filter(array_map('trim', explode(',', $item->content['skills'] ?? '')));$skillsArray = array_merge($skillsArray,$sList);
@@ -281,21 +329,6 @@
         &copy; {{ date('Y') }} {{ $name }}. Built with care.
     </footer>
 
-    <!-- Floating Back / Dashboard Button with Dynamic Preview Support -->
-    @auth
-        <div style="position: fixed; bottom: 25px; right: 25px; z-index: 100;">
-            @if(isset($fromTemplate) && $fromTemplate)
-                <a href="{{ route('portfolios.chooseTemplate') }}" class="button" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                    &larr; Back to Templates
-                </a>
-            @else
-                <a href="{{ route('home') }}" class="button" style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                    &larr; Dashboard
-                </a>
-            @endif
-        </div>
-    @endauth
-
     <script>
         // Highlight the navigation item that matches the section currently in view.
         const navLinks = [...document.querySelectorAll('.nav-links a')];
@@ -319,6 +352,41 @@
             });
 
             observedSections.forEach((section) => sectionObserver.observe(section));
+        }
+
+        // Close Pop-Up Modal
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Copy link from Pop-Up Modal
+        async function copyModalLink(button) {
+            const input = document.getElementById('modalShareLink');
+            if (!input) return;
+
+            const originalText = button.textContent;
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(input.value);
+                } else {
+                    input.focus();
+                    input.select();
+                    document.execCommand('copy');
+                }
+                button.textContent = 'Copied!';
+            } catch (err) {
+                input.focus();
+                input.select();
+                button.textContent = 'Copied!';
+            }
+
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1800);
         }
 
         // Copy the public portfolio URL, with a fallback for browsers without Clipboard API access.
