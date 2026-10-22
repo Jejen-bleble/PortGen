@@ -28,7 +28,7 @@
 
                 <!-- Primary Action Button -->
                 @auth
-
+               
                     <a class="button primary" href="{{ route('home') }}" style="min-height: 38px; padding: 6px 16px; font-size: 13px;">Dashboard →</a>
                 @else
                     <a href="{{ route('login') }}" style="color: #cbd5e1; text-decoration: none; font-weight: 500; font-size: 14px;">Log in</a>
