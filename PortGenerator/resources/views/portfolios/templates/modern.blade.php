@@ -307,7 +307,7 @@
                 </div>
 
                 <ul class="social-list">
-                    @foreach ($socials as$l)
+                    @foreach ($socials as $l)
                         <li>
                             <a href="{{ $l['url'] }}" target="_blank" rel="noopener noreferrer">
                                 {{ $l['label'] }}
